@@ -1,0 +1,46 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: back-end
+  labels:
+    name: back-end
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: back-end
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: back-end
+  labels:
+    app: back-end
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: back-end
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: back-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: back-end
+  template:
+    metadata:
+      labels:
+        app: back-end
+    spec:
+      serviceAccountName: back-end
+      containers:
+      - name: back-end
+        image: ndxa/web-istio:be-1.2
+        imagePullPolicy: IfNotPresent
+---
